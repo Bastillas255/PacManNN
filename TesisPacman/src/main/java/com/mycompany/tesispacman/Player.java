@@ -4,14 +4,23 @@
  */
 package com.mycompany.tesispacman;
 
-import java.awt.Graphics2D;
+import java.awt.Image;
 
 /**
  *
  * @author GigaPC
  */
-public class Player {
-    private void movePacman() {
+//need to copy all pacman variables
+
+
+public class Player{
+    public int pacman_x, pacman_y, pacmand_x, pacmand_y;
+    public int req_dx, req_dy, view_dx, view_dy;
+
+    private final int PACMAN_SPEED = 3;
+    public Image pacman2up, pacman2left, pacman2right, pacman2down;
+    
+    public void movePacman(int BLOCK_SIZE,int N_BLOCKS,short[] screenData) {
 
         int pos;
         short ch;
@@ -27,9 +36,9 @@ public class Player {
             pos = pacman_x / BLOCK_SIZE + N_BLOCKS * (int) (pacman_y / BLOCK_SIZE);
             ch = screenData[pos];
 
-            if ((ch & 16) != 0) {
+            if ((ch & 16) != 0) { //"16" is a dot that gives you points
                 screenData[pos] = (short) (ch & 15);
-                score++;
+                //score++;
             }
 
             if (req_dx != 0 || req_dy != 0) {
@@ -55,89 +64,5 @@ public class Player {
         }
         pacman_x = pacman_x + PACMAN_SPEED * pacmand_x;
         pacman_y = pacman_y + PACMAN_SPEED * pacmand_y;
-    }
-
-    private void drawPacman(Graphics2D g2d) {
-
-        if (view_dx == -1) {
-            drawPacmanLeft(g2d);
-        } else if (view_dx == 1) {
-            drawPacmanRight(g2d);
-        } else if (view_dy == -1) {
-            drawPacmanUp(g2d);
-        } else {
-            drawPacmanDown(g2d);
-        }
-    }
-    private void drawPacmanUp(Graphics2D g2d) {
-
-        switch (pacmanAnimPos) {
-            case 1:
-                g2d.drawImage(pacman2up, pacman_x + 1, pacman_y + 1, this);
-                break;
-            case 2:
-                g2d.drawImage(pacman3up, pacman_x + 1, pacman_y + 1, this);
-                break;
-            case 3:
-                g2d.drawImage(pacman4up, pacman_x + 1, pacman_y + 1, this);
-                break;
-            default:
-                g2d.drawImage(pacman1, pacman_x + 1, pacman_y + 1, this);
-                break;
-        }
-    }
-
-    private void drawPacmanDown(Graphics2D g2d) {
-
-        switch (pacmanAnimPos) {
-            case 1:
-                g2d.drawImage(pacman2down, pacman_x + 1, pacman_y + 1, this);
-                break;
-            case 2:
-                g2d.drawImage(pacman3down, pacman_x + 1, pacman_y + 1, this);
-                break;
-            case 3:
-                g2d.drawImage(pacman4down, pacman_x + 1, pacman_y + 1, this);
-                break;
-            default:
-                g2d.drawImage(pacman1, pacman_x + 1, pacman_y + 1, this);
-                break;
-        }
-    }
-
-    private void drawPacmanLeft(Graphics2D g2d) {
-
-        switch (pacmanAnimPos) {
-            case 1:
-                g2d.drawImage(pacman2left, pacman_x + 1, pacman_y + 1, this);
-                break;
-            case 2:
-                g2d.drawImage(pacman3left, pacman_x + 1, pacman_y + 1, this);
-                break;
-            case 3:
-                g2d.drawImage(pacman4left, pacman_x + 1, pacman_y + 1, this);
-                break;
-            default:
-                g2d.drawImage(pacman1, pacman_x + 1, pacman_y + 1, this);
-                break;
-        }
-    }
-
-    private void drawPacmanRight(Graphics2D g2d) {
-
-        switch (pacmanAnimPos) {
-            case 1:
-                g2d.drawImage(pacman2right, pacman_x + 1, pacman_y + 1, this);
-                break;
-            case 2:
-                g2d.drawImage(pacman3right, pacman_x + 1, pacman_y + 1, this);
-                break;
-            case 3:
-                g2d.drawImage(pacman4right, pacman_x + 1, pacman_y + 1, this);
-                break;
-            default:
-                g2d.drawImage(pacman1, pacman_x + 1, pacman_y + 1, this);
-                break;
-        }
     }
 }
