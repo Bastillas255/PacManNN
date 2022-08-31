@@ -25,6 +25,7 @@ import javax.swing.Timer;
 
 public class Board extends JPanel implements ActionListener {
     private Player pac;
+    private Enemy g;
     //el tiempo del juego solo avanza si pacman esta en moviemento
     //movimiento de pacman con solo presionar una tecla avanza un distacia fija
     private Dimension d;
@@ -40,23 +41,12 @@ public class Board extends JPanel implements ActionListener {
     private final int BLOCK_SIZE = 24;
     private final int N_BLOCKS = 15;
     private final int SCREEN_SIZE = N_BLOCKS * BLOCK_SIZE;
-    private final int PAC_ANIM_DELAY = 2;
-    private final int PACMAN_ANIM_COUNT = 4;
     private final int MAX_GHOSTS = 12;
 
-
-    private int pacAnimCount = PAC_ANIM_DELAY;
-    private int pacAnimDir = 1;
-    private int pacmanAnimPos = 0;
     private int N_GHOSTS = 6;
     private int pacsLeft, score;
-    private int[] dx, dy;
-    private int[] ghost_x, ghost_y, ghost_dx, ghost_dy, ghostSpeed;
 
-    private Image ghost;
     
-    
-
     private final short levelData[] = {
         19, 26, 26, 26, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 22,
         21, 0, 0, 0, 17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
@@ -101,17 +91,10 @@ public class Board extends JPanel implements ActionListener {
 
     private void initVariables() {
         pac = new Player();//Player(ICRAFT_X, ICRAFT_Y);
-        
+        g=new Enemy();
         screenData = new short[N_BLOCKS * N_BLOCKS];
         mazeColor = new Color(5, 100, 5);
         d = new Dimension(400, 400);
-        ghost_x = new int[MAX_GHOSTS];
-        ghost_dx = new int[MAX_GHOSTS];
-        ghost_y = new int[MAX_GHOSTS];
-        ghost_dy = new int[MAX_GHOSTS];
-        ghostSpeed = new int[MAX_GHOSTS];
-        dx = new int[4];
-        dy = new int[4];
         
         timer = new Timer(40, this);
         timer.start();
@@ -134,7 +117,8 @@ public class Board extends JPanel implements ActionListener {
 
             pac.movePacman(BLOCK_SIZE,N_BLOCKS,screenData);
             drawPacman(g2d);
-            moveGhosts(g2d);
+            g.moveGhosts(BLOCK_SIZE,N_BLOCKS,screenData);
+            drawGhost(g2d);
             checkMaze();
         }
     }
@@ -211,83 +195,23 @@ public class Board extends JPanel implements ActionListener {
         continueLevel();
     }
 
-    private void moveGhosts(Graphics2D g2d) {
 
-        short i;
-        int pos;
-        int count;
+     
 
-        for (i = 0; i < N_GHOSTS; i++) {
-            if (ghost_x[i] % BLOCK_SIZE == 0 && ghost_y[i] % BLOCK_SIZE == 0) {
-                pos = ghost_x[i] / BLOCK_SIZE + N_BLOCKS * (int) (ghost_y[i] / BLOCK_SIZE);
-
-                count = 0;
-
-                if ((screenData[pos] & 1) == 0 && ghost_dx[i] != 1) {
-                    dx[count] = -1;
-                    dy[count] = 0;
-                    count++;
-                }
-
-                if ((screenData[pos] & 2) == 0 && ghost_dy[i] != 1) {
-                    dx[count] = 0;
-                    dy[count] = -1;
-                    count++;
-                }
-
-                if ((screenData[pos] & 4) == 0 && ghost_dx[i] != -1) {
-                    dx[count] = 1;
-                    dy[count] = 0;
-                    count++;
-                }
-
-                if ((screenData[pos] & 8) == 0 && ghost_dy[i] != -1) {
-                    dx[count] = 0;
-                    dy[count] = 1;
-                    count++;
-                }
-
-                if (count == 0) {
-
-                    if ((screenData[pos] & 15) == 15) {
-                        ghost_dx[i] = 0;
-                        ghost_dy[i] = 0;
-                    } else {
-                        ghost_dx[i] = -ghost_dx[i];
-                        ghost_dy[i] = -ghost_dy[i];
-                    }
-
-                } else {
-
-                    count = (int) (Math.random() * count);
-
-                    if (count > 3) {
-                        count = 3;
-                    }
-
-                    ghost_dx[i] = dx[count];
-                    ghost_dy[i] = dy[count];
-                }
-
-            }
-
-            ghost_x[i] = ghost_x[i] + (ghost_dx[i] * ghostSpeed[i]);
-            ghost_y[i] = ghost_y[i] + (ghost_dy[i] * ghostSpeed[i]);
-            drawGhost(g2d, ghost_x[i] + 1, ghost_y[i] + 1);
-
-            if (pac.pacman_x > (ghost_x[i] - 12) && pac.pacman_x < (ghost_x[i] + 12)
+/* //shost check to kill pac
+    if (pac.pacman_x > (ghost_x[i] - 12) && pac.pacman_x < (ghost_x[i] + 12)
                     && pac.pacman_y > (ghost_y[i] - 12) && pac.pacman_y < (ghost_y[i] + 12)
                     && inGame) {
 
                 dying = true;
             }
-        }
-    }
+    */
+    
+    
 
+    private void drawGhost(Graphics2D g2d) {
 
-    private void drawGhost(Graphics2D g2d, int x, int y) {
-
-        g2d.drawImage(ghost, x, y, this);
+        g2d.drawImage(g.ghost, g.ghost_x + 1, g.ghost_y + 1, this);
     }
 
     private void drawPacman(Graphics2D g2d) {
@@ -365,23 +289,12 @@ public class Board extends JPanel implements ActionListener {
 
         short i;
         int dx = 1;
-        int random;
 
-        for (i = 0; i < N_GHOSTS; i++) {
-
-            ghost_y[i] = 4 * BLOCK_SIZE;
-            ghost_x[i] = 4 * BLOCK_SIZE;
-            ghost_dy[i] = 0;
-            ghost_dx[i] = dx;
-            dx = -dx;
-            random = (int) (Math.random() * (currentSpeed + 1));
-
-            if (random > currentSpeed) {
-                random = currentSpeed;
-            }
-
-            ghostSpeed[i] = validSpeeds[random];
-        }
+        g.ghost_y = 4 * BLOCK_SIZE;
+        g.ghost_x = 4 * BLOCK_SIZE;
+        g.ghost_dy = 0;
+        g.ghost_dx = dx;
+        g.dx *=-1;
 
         pac.pacman_x = 7 * BLOCK_SIZE;
         pac.pacman_y = 11 * BLOCK_SIZE;
@@ -396,7 +309,7 @@ public class Board extends JPanel implements ActionListener {
 
     private void loadImages() {
 
-        ghost = new ImageIcon("images/PacCat.gif").getImage();
+        g.ghost = new ImageIcon("images/PacCat.gif").getImage();
         pac.pacman2up = new ImageIcon("images/RatUp.gif").getImage();
         pac.pacman2down = new ImageIcon("images/RatDown.gif").getImage();
         pac.pacman2left = new ImageIcon("images/RatLeft.gif").getImage();
