@@ -24,8 +24,9 @@ import javax.swing.Timer;
  * @author GigaPC
  */
 public class BoardDestripado extends JPanel implements ActionListener{
-    private Ghost ghost;
-    //ghost is not being redrawn but i think is moving, when implementing ActionListener Stuff we could see
+    private Ghost ghost; //ghost is not being redrawn but i think is moving, when implementing ActionListener Stuff we could see
+    private PacPlayer pac;
+    
     private Dimension d;
     private Timer timer;
     
@@ -68,6 +69,7 @@ public class BoardDestripado extends JPanel implements ActionListener{
     
     private void initVariables() {
         ghost = new Ghost(90, 55);
+        pac=new PacPlayer(270,270);
         screenData = new short[N_BLOCKS * N_BLOCKS];
 
         d = new Dimension(400, 400);
@@ -125,6 +127,7 @@ public class BoardDestripado extends JPanel implements ActionListener{
         drawMaze(g2d);
         ghost.MoveGhost(BLOCK_SIZE, N_BLOCKS, screenData);//this and draw should be on action listener instead, still no repaint in code
         drawGhost(g2d, ghost.x + 1, ghost.y + 1);
+        drawPacman(g2d);
         //g2d.drawImage(ii, 5, 5, this);
         Toolkit.getDefaultToolkit().sync();
         g2d.dispose();
@@ -132,6 +135,18 @@ public class BoardDestripado extends JPanel implements ActionListener{
     private void drawGhost(Graphics2D g2d, int x, int y) {
 
         g2d.drawImage(ghost.Image, x, y, this);
+    }
+    private void drawPacman(Graphics2D g2d) {
+
+        if (pac.view_dx == -1) {
+            g2d.drawImage(pac.imageLeft, pac.x + 1, pac.y + 1, this);
+        } else if (pac.view_dx == 1) {
+            g2d.drawImage(pac.imageRight, pac.x + 1, pac.y + 1, this);
+        } else if (pac.view_dy == -1) {
+           g2d.drawImage(pac.imageUp, pac.x + 1, pac.y + 1, this);
+        } else {
+           g2d.drawImage(pac.imageDown, pac.x + 1, pac.y + 1, this);
+        }
     }
     /* pacman kill code
                 if (pacman_x > (ghost_x - 12) && pacman_x < (ghost_x[i] + 12)
