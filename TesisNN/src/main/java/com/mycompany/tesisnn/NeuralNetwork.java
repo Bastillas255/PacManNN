@@ -51,7 +51,7 @@ public class NeuralNetwork {
                         for(double d[]:input)
                             {
                             output = predict(d);
-                            System.out.println(output.toString());
+                            //System.out.println(output.toString()); //Imprime los resultados de la predicción
                             }		
                 }
 	}	
