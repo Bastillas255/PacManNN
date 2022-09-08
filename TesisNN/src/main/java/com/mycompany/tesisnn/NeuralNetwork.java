@@ -46,7 +46,7 @@ public class NeuralNetwork {
 		{	
 			int sampleN =  (int)(Math.random() * X.length );
 			this.train(X[sampleN], Y[sampleN]);
-                        System.out.println("Epoca: "+i);
+                        //System.out.println("Epoca: "+i);
                         double [][] input = {{0,0},{0,1},{1,0},{1,1}};
                         for(double d[]:input)
                             {

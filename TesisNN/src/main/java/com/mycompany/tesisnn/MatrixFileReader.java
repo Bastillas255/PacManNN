@@ -8,7 +8,6 @@ import java.awt.FileDialog;
 import java.awt.Frame;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -17,22 +16,29 @@ import java.util.Scanner;
  */
 public class MatrixFileReader {
     
-    private static int ROWS = 4;
-    private static int COLUMNS = 2;
+    private static int ROWS = 1;
+    private static int COLUMNS = 1;
     
     public static void main(String[] args) throws FileNotFoundException {
         readFile();
     }
-
+/**
+ * Hace al usuario elegir un archivo .txt, lo lee y extrae los datos de la matriz
+ * que contenga, vigilar que los valoren se detecten como double y no float o int
+ * @throws FileNotFoundException 
+ */
     public static void readFile() throws FileNotFoundException {
         try{
+            File file = chooseTextFile();
+            Scanner sc = new Scanner(file);
+            getFileMatrixDimensions(file);
             double[][] numArray = new double[ROWS][COLUMNS];
-            Scanner sc = new Scanner(chooseTextFile());
             while(sc.hasNextLine()){
                 for(int i = 0; i < numArray.length; i++){
                     String[] line = sc.nextLine().trim().split("," + " ");
                     for(int j = 0; j < line.length; j++){
-                        numArray[i][j] = Double.parseDouble(line[j]);
+                        numArray[i][j] = Double.parseDouble(line[j]);   //En archivos creados por uno vigilar cómo detecta el tipo de número
+                                                                        //No parseará float a double, asegurarse de que los datos del archivos se detecten como double
                     }
                     System.out.println(line.length);
                 }
@@ -53,10 +59,31 @@ public class MatrixFileReader {
             System.out.println();
         }
     }
-    
-    private static void getFileMatrixDimensions(){
+    /**
+     * Recorre el archivo con el propósito de obtener las dimensiones de la matriz
+     * @param file Archivo con matriz de double
+     */
+    private static void getFileMatrixDimensions(File file){
         //Básicamente recorrer la primera línea para obtener las columnas, y recorrer
         //el resto del archivo para contar las filas
+        try{
+            int rows = 0;
+            Scanner sc = new Scanner(file);
+            if(sc.hasNextLine()){
+                String[] line = sc.nextLine().trim().split("," + " ");
+                COLUMNS = line.length;
+                rows++;
+                while(sc.hasNextLine()){
+                    sc.nextLine();
+                    rows++;
+                }
+                ROWS = rows;
+                System.out.println("Dimensiones: ROWS = " + ROWS + " | COLUMNS: " + COLUMNS);
+            }
+            
+        }catch(FileNotFoundException e){
+            System.out.println(e);
+        }
         
     }
 
