@@ -29,7 +29,7 @@ public class MatrixFileHandler {
  * que contenga, vigilar que los valoren se detecten como double y no float o int
  * @throws FileNotFoundException 
  */
-    public static void readFile() throws FileNotFoundException {
+    public static double[][] readFile() throws FileNotFoundException {
         try{
             File file = chooseTextFile();
             Scanner sc = new Scanner(file);
@@ -45,14 +45,16 @@ public class MatrixFileHandler {
                 }
             }
         //printMatrix(numArray);
+        return numArray;
         }
         catch(FileNotFoundException e){
             System.out.println("Algo salió mal: ");
             e.printStackTrace();
         }
+        return null;
     }
     
-    private static void printMatrix(double[][] m){
+    public static void printMatrix(double[][] m){
         for(int i=0; i<m.length;i++){
             for(int j=0; j<m[i].length; j++){
                 System.out.print(m[i][j] + " ");

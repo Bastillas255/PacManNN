@@ -45,14 +45,14 @@ public class TesisNN {
                 matrizTest[i][j] = j+1;
             }
         }
-        
+        double[][] newMatriz;
         MatrixFileHandler fh = new MatrixFileHandler();
         try {
             fh.writeFile(matrizTest, "Guardar matriz de testing");
-            fh.readFile();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(TesisNN.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+        newMatriz = fh.readFile();
+        fh.printMatrix(newMatriz);
     }
 }
