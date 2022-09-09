@@ -36,9 +36,9 @@ public class TesisNN {
         for(double d[]:input)
         {
             output = nn.predict(d);
-            //System.out.println(output.toString());
+            System.out.println(output.toString());
 	}
-        
+        /*
         double[][] matrizTest = new double[100][15];
         for(int i=0; i<100; i++){
             for(int j=0; j<15; j++){
@@ -53,5 +53,6 @@ public class TesisNN {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(TesisNN.class.getName()).log(Level.SEVERE, null, ex);
         }
+        */
     }
 }
