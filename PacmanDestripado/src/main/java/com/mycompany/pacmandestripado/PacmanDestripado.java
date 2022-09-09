@@ -24,10 +24,13 @@ public class PacmanDestripado extends JFrame{
         
         add(new BoardDestripado());
         
+        setResizable(false);
+        
         setTitle("Pacman");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(380, 420);
         setLocationRelativeTo(null);
+
     }
     
     public static void main(String[] args) {
