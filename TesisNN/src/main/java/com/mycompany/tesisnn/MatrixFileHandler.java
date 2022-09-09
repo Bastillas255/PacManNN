@@ -12,6 +12,8 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 
 /**
  *
@@ -22,9 +24,6 @@ public class MatrixFileHandler {
     private static int ROWS = 1;
     private static int COLUMNS = 1;
     
-    public static void main(String[] args) throws FileNotFoundException {
-        readFile();
-    }
 /**
  * Hace al usuario elegir un archivo .txt, lo lee y extrae los datos de la matriz
  * que contenga, vigilar que los valoren se detecten como double y no float o int
@@ -93,10 +92,21 @@ public class MatrixFileHandler {
      * Escribe una matriz en un archivo txt
      * @param m Matriz de números tipo double
      */
-    public static void writeFile(double[][] m){
+    public static void writeFile(double[][] m, String titulo) throws Exception{
         //Recorrer la matriz para escribirla en un archivo
         try{
-            BufferedWriter bw = new BufferedWriter(new FileWriter(new File("C:\\tesisTest\\writeTest.txt")));
+            FileDialog fileDialog = new FileDialog((Frame) null, titulo);
+            File file;
+            fileDialog.setMode(FileDialog.SAVE);
+            fileDialog.setFile(".txt");
+            fileDialog.setVisible(true);
+            if(fileDialog.getFile() != null){
+                file = new File(fileDialog.getDirectory(), fileDialog.getFile());
+            } else {
+                throw new Exception("Operación cancelada");
+            }
+            
+            BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsolutePath()));
             for(int i=0; i<m.length; i++){
                 for(int j=0; j<m[i].length; j++){
                     bw.write(m[i][j] + ((j == m[i].length-1) ? " " : ", "));

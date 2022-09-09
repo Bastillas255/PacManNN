@@ -25,7 +25,7 @@ public class TesisNN {
 			{0},{1},{1},{0}
 	};
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
         NeuralNetwork nn = new NeuralNetwork(2,10,1);
         
         List<Double>output;
@@ -36,9 +36,9 @@ public class TesisNN {
         for(double d[]:input)
         {
             output = nn.predict(d);
-            System.out.println(output.toString());
+            //System.out.println(output.toString());
 	}
-        /*
+        
         double[][] matrizTest = new double[100][15];
         for(int i=0; i<100; i++){
             for(int j=0; j<15; j++){
@@ -48,11 +48,11 @@ public class TesisNN {
         
         MatrixFileHandler fh = new MatrixFileHandler();
         try {
-            fh.writeFile(matrizTest);
+            fh.writeFile(matrizTest, "Guardar matriz de testing");
             fh.readFile();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(TesisNN.class.getName()).log(Level.SEVERE, null, ex);
         }
-        */
+        
     }
 }
