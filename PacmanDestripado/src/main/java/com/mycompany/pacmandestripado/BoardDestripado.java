@@ -7,6 +7,7 @@ package com.mycompany.pacmandestripado;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Event;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -15,23 +16,36 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
  * @author GigaPC
  */
-//pac needs to move to 1 square, when it gets there timer pauses, if a direction is input time resumes and move 1 square more
+
+//pac should stop time on standstill and accept movement only after moving one entire block
+/**
+    how to stand still? was that even possible in the original java project?
+    * nope,it wasn't possible
+    * not even in the arcade pacman
+    * should advance a intire square then time stop
+*/  
+//ghost should have A* to search for pac
+
+
 public class BoardDestripado extends JPanel implements ActionListener{
     private Ghost ghost;
     private PacPlayer pac;
     
     private Dimension d;
     private Timer timer;
+    public boolean isPaused;
     
-    private final int N_Prizes=4;
     private final int BLOCK_SIZE = 24;
     private final int N_BLOCKS = 15;
     private final int SCREEN_SIZE = N_BLOCKS * BLOCK_SIZE;
@@ -54,11 +68,12 @@ public class BoardDestripado extends JPanel implements ActionListener{
     };
 //1,  2, 4 and 8 represent left. top, right, and bottom corners respectively. Number 16 is a point
     private short[] screenData;
-    int score=0;//this should be
+    int score=0;//this should be 0 and count up to the maximum numbers of prizes on screen
+    private final int N_Prizes=4;
     int pos;
     short ch;
 
-    
+    public int req_dx,req_dy;//this are pacman inputs catch through key event
     private final Color mazeColor = new Color(5, 100, 5);
     private final Color dotColor = new Color(192, 192, 0);
         
@@ -84,7 +99,7 @@ public class BoardDestripado extends JPanel implements ActionListener{
     }
     
     private void initBoard() {    
-        //addKeyListener(new TAdapter());
+        addKeyListener(new TAdapter());
 
         setFocusable(true);
 
@@ -122,6 +137,7 @@ public class BoardDestripado extends JPanel implements ActionListener{
     }
 
     private void doDrawing(Graphics g) {
+        
         Graphics2D g2d = (Graphics2D) g;
 
         g2d.setColor(Color.black);
@@ -130,11 +146,21 @@ public class BoardDestripado extends JPanel implements ActionListener{
         //showIntroScreen(g2d);
         initLevel();
         drawMaze(g2d);
-        ghost.MoveGhost(BLOCK_SIZE, N_BLOCKS, screenData);
-        drawGhost(g2d, ghost.x-4, ghost.y-8);//this should be change at one point, hitbox maybe to different to the sprite offset
-        pac.MovePacman(BLOCK_SIZE, N_BLOCKS, screenData,-1,0, score);
-        drawPacman(g2d);
-        gameStateCheck();
+        
+        //isPaused=pac.x % BLOCK_SIZE == 0 && pac.y % BLOCK_SIZE == 0;//pausamos si se completo un movimiento
+        //req_dx=nn.outputx;//esperamos por un output de NN, si tenemos output despausamos
+        
+        if(!isPaused){
+            ghost.MoveGhost(BLOCK_SIZE, N_BLOCKS, screenData);
+            drawGhost(g2d, ghost.x-4, ghost.y-8);//this should be change at one point, hitbox maybe to different to the sprite offset
+            pac.MovePacman(BLOCK_SIZE, N_BLOCKS, screenData,req_dx,req_dy);
+            drawPacman(g2d);
+            gameStateCheck();
+        }else{
+            drawGhost(g2d, ghost.x-4, ghost.y-8);
+            drawPacman(g2d);
+        }
+        
         
         //g2d.drawImage(ii, 5, 5, this);
         Toolkit.getDefaultToolkit().sync();
@@ -148,13 +174,13 @@ public class BoardDestripado extends JPanel implements ActionListener{
     private void drawPacman(Graphics2D g2d) {
 
         if (pac.view_dx == -1) {
-            g2d.drawImage(pac.imageLeft, pac.x + 1, pac.y + 1, this);
+            g2d.drawImage(pac.imageLeft, pac.x -4, pac.y -4, this);
         } else if (pac.view_dx == 1) {
-            g2d.drawImage(pac.imageRight, pac.x + 1, pac.y + 1, this);
+            g2d.drawImage(pac.imageRight, pac.x -4, pac.y -4, this);
         } else if (pac.view_dy == -1) {
-           g2d.drawImage(pac.imageUp, pac.x + 1, pac.y + 1, this);
+           g2d.drawImage(pac.imageUp, pac.x -4, pac.y -4, this);
         } else {
-           g2d.drawImage(pac.imageDown, pac.x + 1, pac.y + 1, this);
+           g2d.drawImage(pac.imageDown, pac.x -4, pac.y -4, this);
         }
     }
     
@@ -218,10 +244,55 @@ public class BoardDestripado extends JPanel implements ActionListener{
     }
 
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        //repaint();
+    class TAdapter extends KeyAdapter {
+
+        @Override
+        public void keyPressed(KeyEvent e){
+
+            int key = e.getKeyCode();
+
+            switch (key) {
+                case KeyEvent.VK_LEFT:
+                    req_dx = -1;
+                    req_dy = 0;
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    req_dx = 1;
+                    req_dy = 0;
+                    break;
+                case KeyEvent.VK_UP:
+                    req_dx = 0;
+                    req_dy = -1;
+                    break;
+                case KeyEvent.VK_DOWN:
+                    req_dx = 0;
+                    req_dy = 1;
+                    break;
+                case KeyEvent.VK_PAUSE:
+                    isPaused=!isPaused;
+                    break;
+                default:
+                    break;
+            }
+            
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+
+            int key = e.getKeyCode();
+
+            if (key == Event.LEFT || key == Event.RIGHT
+                    || key == Event.UP || key == Event.DOWN) {
+                req_dx = 0;
+                req_dy = 0;
+            }
+        }
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        repaint();
+    }
 }
