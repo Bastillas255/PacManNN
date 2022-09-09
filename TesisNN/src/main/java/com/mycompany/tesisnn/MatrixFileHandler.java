@@ -6,15 +6,18 @@ package com.mycompany.tesisnn;
 
 import java.awt.FileDialog;
 import java.awt.Frame;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
  *
  * @author rohta
  */
-public class MatrixFileReader {
+public class MatrixFileHandler {
     
     private static int ROWS = 1;
     private static int COLUMNS = 1;
@@ -40,10 +43,9 @@ public class MatrixFileReader {
                         numArray[i][j] = Double.parseDouble(line[j]);   //En archivos creados por uno vigilar cómo detecta el tipo de número
                                                                         //No parseará float a double, asegurarse de que los datos del archivos se detecten como double
                     }
-                    System.out.println(line.length);
                 }
             }
-        printMatrix(numArray);
+        //printMatrix(numArray);
         }
         catch(FileNotFoundException e){
             System.out.println("Algo salió mal: ");
@@ -59,6 +61,7 @@ public class MatrixFileReader {
             System.out.println();
         }
     }
+    
     /**
      * Recorre el archivo con el propósito de obtener las dimensiones de la matriz
      * @param file Archivo con matriz de double
@@ -78,13 +81,32 @@ public class MatrixFileReader {
                     rows++;
                 }
                 ROWS = rows;
-                System.out.println("Dimensiones: ROWS = " + ROWS + " | COLUMNS: " + COLUMNS);
+                //System.out.println("Dimensiones: ROWS = " + ROWS + " | COLUMNS: " + COLUMNS);
             }
             
         }catch(FileNotFoundException e){
             System.out.println(e);
         }
-        
+    }
+    
+    /**
+     * Escribe una matriz en un archivo txt
+     * @param m Matriz de números tipo double
+     */
+    public static void writeFile(double[][] m){
+        //Recorrer la matriz para escribirla en un archivo
+        try{
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File("C:\\tesisTest\\writeTest.txt")));
+            for(int i=0; i<m.length; i++){
+                for(int j=0; j<m[i].length; j++){
+                    bw.write(m[i][j] + ((j == m[i].length-1) ? " " : ", "));
+                }
+                bw.newLine();
+            }
+            bw.flush();
+        } catch(IOException e){
+            System.out.println(e);
+        }
     }
 
     private static File chooseTextFile() {

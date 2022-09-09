@@ -39,27 +39,19 @@ public class TesisNN {
             //System.out.println(output.toString());
 	}
         
-        MatrixFileReader fr = new MatrixFileReader();
+        double[][] matrizTest = new double[100][15];
+        for(int i=0; i<100; i++){
+            for(int j=0; j<15; j++){
+                matrizTest[i][j] = j+1;
+            }
+        }
+        
+        MatrixFileHandler fh = new MatrixFileHandler();
         try {
-            fr.readFile();
+            fh.writeFile(matrizTest);
+            fh.readFile();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(TesisNN.class.getName()).log(Level.SEVERE, null, ex);
         }
-            //Ciclos for usados para verificar cómo se lee la matriz, para tener una guía de como construir
-            //la matriz real con los datos del pacman para la red neuronal
-            /*
-            String c = "";
-            for(int i=0; i<X.length; i++){
-            for(int j=0; j<2;j++){
-            c = c + String.valueOf(X[i][j]) + " ";
-            }
-            System.out.println(c);
-            c = "";
-            }
-            System.out.println(c);
-            for(int i=0; i<Y.length; i++){
-            c = c + String.valueOf(Y[i][0])+ " ";
-            }
-            System.out.println(c);*/
     }
 }
